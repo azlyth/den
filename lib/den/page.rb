@@ -29,13 +29,13 @@ class Page < Resource
   def process
     File.open(@file) do |f|
       page = markup(f.read)
+
+      # Extract the url from the filename
+      page[:id] = @file.split('/')[-1]
+
+      # Store the processed info
+      @content = page
     end
-
-    # Extract the url from the filename
-    page[:id] = @file.split('/')[-1]
-
-    # Store the processed info
-    @content = page
   end
 
 end
