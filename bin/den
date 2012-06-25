@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'den'
+require 'yaml'
+
+# If the command was to make a new site, do it and quit
+if "#{ARGV[0]} #{ARGV[1]}".downcase == "new site" and ARGV.length == 3
+  Den.create_skeleton(ARGV[2])
+  exit
+end
+
+# Exit if the '.den' file doesn't exist
+if !File.exists?('.den')
+  abort("Make sure you're running from the root of your Den instance.")
+end
+
+# Load the config if it exists
+config = YAML::load(File.open('config.yml')) if File.exist?('config.yml')
+
+# Create a Den instance
+den = Den.new(config=config)
+
+# Process arguments
+case ARGV[0]
+
+when 'new'
+  # Handle different 'new' cases (page, post)
+  if ARGV[1].downcase == 'page'
+    if !(ARGV.length == 3 or ARGV.length == 4)
+      abort('Invalid format for "new page".')
+    end
+    den.new_resource('page', :dest => ARGV[2], :file => ARGV[3])
+  elsif ARGV[1].downcase == 'post'
+    if !(ARGV.length == 2 or ARGV.length == 3)
+      abort('Invalid format for "new post".')
+	end
+    den.new_resource('post', :file => ARGV[2])
+  else
+    abort("'#{ARGV[1]}' is an invalid argument for 'new'. Must be either 'page' or 'post'.")
+  end
+
+  # Update the site
+  den.update_site(refresh=true)
+
+
+when 'delete'
+  abort('Invalid format for command "delete".') if ARGV.length != 3
+  if ARGV[1].downcase == 'page' or ARGV[1].downcase == 'post'
+    den.delete_resource(ARGV[1].downcase, ARGV[2])
+  else
+    abort("'#{ARGV[1]}' is an invalid argument for 'delete'. Must be either 'page' or 'post'.")
+  end
+
+  # Update the site
+  den.update_site(refresh=true)
+
+
+when 'list'
+  abort('Invalid format for "list".') if ARGV.length > 1
+  # Display all the content
+  den.print_content
+
+# Unrecognized argument, exit
+else
+  if ARGV.length > 0
+    abort('Invalid command.')
+  else
+    den.update_site
+  end
+end
