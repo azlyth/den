@@ -113,13 +113,13 @@ class Den
       elsif type == 'post'
         file = File.join('posts', 'new', 'new.post')
         system("/usr/bin/editor #{file}")
-        gather_new_posts
       end
 
       if File.exists?(file)
+        gather_new_posts
         puts "Added a #{type}."
       else
-        puts "Cancelled adding a #{type}."
+        puts "Canceled adding a #{type}."
       end
 
     else
