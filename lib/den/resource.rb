@@ -42,7 +42,7 @@ class Resource
     # Headers
     s.gsub!(/^(#+)\s*(.*)/) {
       len = $1.length
-      "<h#{len+1} class=\"header\">#$2</h#{len}>"
+      "<h#{len+1} class=\"header\">#$2</h#{len+1}>"
     }
 
     # Paragraphs
