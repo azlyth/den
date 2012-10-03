@@ -33,7 +33,7 @@ class Resource
     # Remove duplicate newlines
     s.gsub!(/\n\n+/, "\n\n")
 
-    # Remove leading whitespace from lines
+    # Remove leading spaces from lines
     s.gsub!(/^ +/, "")
 
     # Pad string to remove edge cases
@@ -45,12 +45,15 @@ class Resource
       "<h#{len+1} class=\"header\">#$2</h#{len+1}>"
     }
 
+    # Code (leaving placeholder pre tags)
+    s.gsub!(/^\t(.*)$/, "<pre>\\1</pre>")
+
     # Paragraphs
     s.gsub!(/(\A|\n)\n([^<])/, "\n\n<p>\\2")
     s.gsub!(/([^>])\n\n/, "\\1</p>\n\n")
 
-    # Remove extra newlines
-    s.gsub!(/\n+/, "\n")
+    # Remove placeholder pre tags
+    s.gsub!(/<\/pre>\n<pre>/, "\n")
 
     {:title => title, :body => s}
   end
